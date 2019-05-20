@@ -1,53 +1,76 @@
-import React, {useState} from 'react';
+import React, {Component} from 'react';
 import './App.css';
 import Person from './Person/Person';
 
-const App = props => {
-
-    // Second parameter setPersonState - by this name I can set new state
-    // example in switchNameHandler
-    const [personsState, setPersonsState] = useState({
+class App extends Component {
+    state = {
         persons: [
             {name: 'Adam', age: '31'},
             {name: 'Celina', age: '32'},
             {name: 'Ewa', age: '30'}
         ]
-    });
-
-    const switchNameHandler = () => {
-        setPersonsState({
-                persons: [
-                    {name: 'Adam', age: '32'},
-                    {name: 'Celina', age: '33'},
-                    {name: 'Ewa', age: '31'}
-                ]
-            }
-        )
     }
 
-    return (
-        <div className="App">
-            <h1>Hello</h1>
-            {/*switchNameHandler is without (), because with () this.switchNameHandler() it will execute immediately*/}
-            {/*Without () is a reference*/}
-            <button onClick={switchNameHandler}>Switch name</button>
-            <Person
-                name={personsState.persons[0].name}
-                age={personsState.persons[0].age}> My hobby is sth.
-            </Person>
-            <Person
-                name={personsState.persons[1].name}
-                age={personsState.persons[1].age}
-                // click={switchNameHandler()}
-            >
-            </Person>
-            <Person
-                name={personsState.persons[2].name}
-                age={personsState.persons[2].age}>
-            </Person>
-        </div>
-    );
+    // It is an event handler. Good practice: give name ending handler
+    switchNameHandler = (newName) => {
+        this.setState({
+            persons: [
+                {name: newName, age: '31'},
+                {name: 'Celina', age: '33'},
+                {name: 'Ewa', age: '30'}
+            ]
+        })
+    }
 
+    nameChangeHandler = (event) => {
+        this.setState({
+            persons: [
+                {name: 'Adam', age: '31'},
+                {name: event.target.value, age: '35'},
+                {name: 'Ewa', age: '30'}
+            ]
+        })
+    }
+
+    render() {
+        // style JavaScript way
+        const style = {
+            backgroundColor: 'white',
+            font: 'inherit',
+            border: '1px solid blue',
+            padding: '8px',
+            cursor: 'pointer'
+        }
+
+        return (
+            <div className="App">
+                <h1>Hello</h1>
+                {/*switchNameHandler is without (), because with () this.switchNameHandler() it will execute immediately*/}
+                {/*Without () is a reference*/}
+                <button
+                    style={style}
+                    onClick={this.switchNameHandler.bind(this, 'Piotr')}>Switch name</button>
+                <Person
+                    name={this.state.persons[0].name}
+                    age={this.state.persons[0].age}
+//                     () => include return this.switchNameHandler('Peter!')
+//                     so we can change to () => {return this.switchNameHandler('Peter!')}
+//                     () => is no efficient so use bind version instead
+                    click={() => {return this.switchNameHandler('Peter!')}}> My hobby is racing.
+                </Person>
+                <Person
+                    name={this.state.persons[1].name}
+                    age={this.state.persons[1].age}
+                    // pass method reference as props
+                    click={this.switchNameHandler.bind(this, 'Peter')}
+                    changed={this.nameChangeHandler}
+                />
+                <Person
+                    name={this.state.persons[2].name}
+                    age={this.state.persons[2].age}/>
+            </div>
+        );
+    }
 }
 
 export default App;
